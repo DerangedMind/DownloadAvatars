@@ -1,0 +1,12 @@
+{
+  "name": "download-avi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "download_avatars.js",
+  "scripts": {
+    "test": "mocha",
+    "start": "node download_avatars.js"
+  },
+  "author": "",
+  "license": "ISC"
+}

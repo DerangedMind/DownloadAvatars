@@ -38,7 +38,9 @@ function downloadImageByURL(result, contributor) {
   var username = contributor['login'];
   var _url = contributor['avatar_url'];
 
-  console.log(username, _url)
+  request
+    .get(_url)
+    .pipe(fs.createWriteStream('./avatars/' + username + '.jpg'));
 }
 
 getRepoContributors("jquery", "jquery", function (err, result, body) {

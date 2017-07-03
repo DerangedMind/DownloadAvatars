@@ -28,15 +28,24 @@ function getRepoContributors(repoOwner, repoName, cb) {
     }
   };
 
+  console.log(requestURL)
+
   request(requestURL, cb)
   
+}
+
+function downloadImageByURL(result, contributor) {
+  var username = contributor['login'];
+  var _url = contributor['avatar_url'];
+
+  console.log(username, _url)
 }
 
 getRepoContributors("jquery", "jquery", function (err, result, body) {
   console.log("Errors: " + err);
   var bodyJSON = JSON.parse(body);
   for (var contributor in bodyJSON) {
-    console.log(bodyJSON[contributor]['avatar_url'])
+    downloadImageByURL(result, bodyJSON[contributor])
   }
 
 

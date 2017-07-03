@@ -6,3 +6,8 @@
 
 // download images to folder "./avatars/" 
 // images should be named <GH_USER>.png
+
+
+// GitHub API JSON keys:
+
+// login, avatar_url

@@ -15,42 +15,76 @@
 
 var request = require('request');
 var fs = require('fs');
-var GITHUB_USER = "DerangedMind";
-var GITHUB_TOKEN = "80fa3987b1f0846b40c281ace9801490d4937bf8";
+require('dotenv').config();
+
+var GITHUB_USER = process.env.GITHUB_USER;
+var GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+console.log(GITHUB_USER)
+
+var stdARGS = process.argv.slice(2);
 
 console.log('Welcome to the GitHub Avatar Downloader');
 
-function getRepoContributors(repoOwner, repoName, cb) {
+checkArgs();
+
+function checkArgs() {
+  if (stdARGS.length < 2) {
+    console.log("You forgot to include an owner or repo!");
+    return;
+  }
+  console.log("what");
+  getRepoContributors(stdARGS[0], stdARGS[1], handleRequest);
+}
+
+function getRepoContributors(repoOwner, repoName, callback) {
   var requestURL = {
     url: 'https://' + GITHUB_USER + ':' + GITHUB_TOKEN + '@api.github.com/repos/' + repoOwner + '/' + repoName + '/contributors',
     headers: {
       'User-Agent': 'DerangedMind'
     }
   };
+  console.log("where do we get stuck?");
+  request(requestURL, callback);
+  
+}
 
-  console.log(requestURL)
+function handleRequest(err, result, body) {
+  if (err) {
+    throw console.log("Errors: " + err);
+  }
 
-  request(requestURL, cb)
+  cycleContributors(result, parseJSON(body));
   
 }
 
 function downloadImageByURL(result, contributor) {
   var username = contributor['login'];
   var _url = contributor['avatar_url'];
+  
 
   request
     .get(_url)
-    .pipe(fs.createWriteStream('./avatars/' + username + '.jpg'));
+    .on('response', function() {
+      console.log("Downloading avatars...");
+    })
+    .pipe(fs.createWriteStream('./avatars/' + username + '.jpg'))
+    .on('finish', function() {
+      console.log("Download complete.");
+    });
 }
 
-getRepoContributors("jquery", "jquery", function (err, result, body) {
-  console.log("Errors: " + err);
-  var bodyJSON = JSON.parse(body);
-  for (var contributor in bodyJSON) {
-    downloadImageByURL(result, bodyJSON[contributor])
+
+
+function parseJSON(body) {
+
+  return JSON.parse(body);
+}
+
+function cycleContributors(result, _bodyJSON) {
+
+  for (var contributor in _bodyJSON) {
+    downloadImageByURL(result, _bodyJSON[contributor]);
   }
-
-
-
-})
+  
+}
 
